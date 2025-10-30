@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ToolsGo</title>
+
+  <!-- 🧩 ファビコン設定 -->
+  <link rel="icon" type="image/png" href="/favicon.png" />
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #141e30, #243b55);
+      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* 左上タイトル */
+    #site-title {
+      position: fixed;
+      top: 15px;
+      left: 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #fff;
+      letter-spacing: 0.5px;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+      user-select: none;
+    }
+
+    /* 🎯 Toolsボタン（文字バージョン・小型・枠あり） */
+    #tools-btn {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 5px;
+      padding: 3px 8px; /* ← 横幅ぴったりに */
+      font-size: 0.7rem;
+      cursor: pointer;
+      line-height: 1;
+      width: auto;
+      height: auto;
+      transition: background 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(4px);
+    }
+
+    #tools-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+      transform: none; /* 🔒ズーム完全禁止 */
+    }
+
+    #tools-btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Toolsウィンドウ */
+    #tools-window {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #tools-window.show {
+      display: flex;
+      opacity: 1;
+      animation: fadeIn 0.3s forwards;
+    }
+
+    #tools-window.hide {
+      animation: fadeOut 0.3s forwards;
+    }
+
+    #tools-content {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 25px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 320px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 25px;
+      text-align: center;
+      justify-items: center;
+    }
+
+    .tool-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .tool-item:hover {
+      transform: translateY(-4px);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .tool-emoji {
+      font-size: 2rem;
+    }
+
+    .tool-name {
+      font-size: 0.85rem;
+      margin-top: 5px;
+    }
+
+    #close-tools {
+      grid-column: span 2;
+      margin-top: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      width: 60%;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* コンテナ共通 */
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      width: 90%;
+      max-width: 460px;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 25px;
+      letter-spacing: 1px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 380px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    button {
+      width: 100%;
+      max-width: 380px;
+      background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: box-shadow 0.25s ease;
+    }
+
+    button:hover {
+      box-shadow: 0 0 12px rgba(0, 114, 255, 0.8);
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    footer a {
+      color: #aaa;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .hidden { display: none; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; transform: scale(1); }
+      to { opacity: 0; transform: scale(0.95); }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-title">ToolsGo</div>
+  <button id="tools-btn">Tools</button>
+
+  <div id="tools-window">
+    <div id="tools-content">
+      <div class="tool-item" id="menu-html">
+        <div class="tool-emoji">🌐</div>
+        <div class="tool-name">HTML Downloader</div>
+      </div>
+      <div class="tool-item" id="menu-sb3">
+        <div class="tool-emoji">🐱</div>
+        <div class="tool-name">SB3 Downloader</div>
+      </div>
+      <div class="tool-item" id="menu-qr">
+        <div class="tool-emoji">📱</div>
+        <div class="tool-name">QR Maker</div>
+      </div>
+      <button id="close-tools">Close</button>
+    </div>
+  </div>
+
+  <!-- HTML Downloader -->
+  <div class="container" id="html-downloader">
+    <h1>HTML Downloader</h1>
+    <form id="html-form">
+      <input type="text" id="html-url" placeholder="Enter a URL (e.g. example.com)" required />
+      <button type="submit">Download HTML</button>
+    </form>
+    <footer><a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">https://github.com/sharpner-jp/ToolsGo</a></footer>
+  </div>
+
+  <!-- SB3 Downloader -->
+  <div class="container hidden" id="sb3-downloader">
+    <h1>Scratch SB3 Downloader</h1>
+    <form id="sb3-form">
+      <input type="text" id="scratch-id" placeholder="Enter Scratch URL or ID" required />
+      <button type="submit">Download SB3</button>
+    </form>
+    <footer><a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">https://github.com/sharpner-jp/ToolsGo</a></footer>
+  </div>
+
+  <!-- QR Code Maker -->
+  <div class="container hidden" id="qr-maker">
+    <h1>QR Code Maker</h1>
+    <form id="qr-form">
+      <input type="text" id="qr-text" placeholder="Enter text or URL (e.g. example.com)" required />
+      <button type="submit">Generate QR</button>
+    </form>
+    <div id="qr-result" style="margin-top:20px;"></div>
+    <footer><a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">https://github.com/sharpner-jp/ToolsGo</a></footer>
+  </div>
+
+  <script>
+    const toolsBtn = document.getElementById("tools-btn");
+    const toolsWindow = document.getElementById("tools-window");
+    const closeTools = document.getElementById("close-tools");
+
+    const htmlSection = document.getElementById("html-downloader");
+    const sb3Section = document.getElementById("sb3-downloader");
+    const qrSection = document.getElementById("qr-maker");
+
+    function showSection(section) {
+      [htmlSection, sb3Section, qrSection].forEach(s => s.classList.add("hidden"));
+      section.classList.remove("hidden");
+      closeToolsWindow();
+    }
+
+    toolsBtn.addEventListener("click", () => {
+      toolsWindow.classList.remove("hide");
+      toolsWindow.classList.add("show");
+      toolsWindow.style.display = "flex";
+    });
+
+    function closeToolsWindow() {
+      toolsWindow.classList.remove("show");
+      toolsWindow.classList.add("hide");
+      setTimeout(() => {
+        toolsWindow.style.display = "none";
+        toolsWindow.classList.remove("hide");
+      }, 300);
+    }
+
+    closeTools.addEventListener("click", closeToolsWindow);
+    toolsWindow.addEventListener("click", (e) => {
+      if (e.target === toolsWindow) closeToolsWindow();
+    });
+
+    document.getElementById("menu-html").onclick = () => showSection(htmlSection);
+    document.getElementById("menu-sb3").onclick = () => showSection(sb3Section);
+    document.getElementById("menu-qr").onclick = () => showSection(qrSection);
+
+    document.getElementById("html-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      let url = document.getElementById("html-url").value.trim();
+      if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+      window.location.href = `/download?url=${encodeURIComponent(url)}`;
+    });
+
+    document.getElementById("sb3-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      let input = document.getElementById("scratch-id").value.trim();
+      const match = input.match(/projects\/(\d+)/);
+      const id = match ? match[1] : input.replace(/\D/g, "");
+      if (!id) return alert("有効なリンクまたはIDを入力してください。");
+      window.location.href = `/scratch-download/${id}`;
+    });
+
+    document.getElementById("qr-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      let text = document.getElementById("qr-text").value.trim();
+      if (/^[\w.-]+\.[a-z]{2,}/i.test(text) && !/^https?:\/\//i.test(text))
+        text = "https://" + text;
+      const qrUrl = `/qrcode?text=${encodeURIComponent(text)}`;
+      document.getElementById("qr-result").innerHTML = `
+        <img src="${qrUrl}" style="width:200px;height:200px;border-radius:10px;">
+        <br><br>
+        <a href="${qrUrl}" download="qrcode.png">
+          <button type="button">Download QR Code</button>
+        </a>`;
+    });
+  </script>
+</body>
+</html>
