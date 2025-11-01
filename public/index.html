@@ -4,15 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ToolsGo</title>
-
-  <!-- 🧩 ファビコン設定 -->
-  <link rel="icon" type="image/png" href="/favicon.png" />
-
+  <link rel="icon" type="image/png" href="favicon.png" />
   <style>
     body {
-      background: linear-gradient(135deg, #141e30, #243b55);
+      background: #ffffff;
       font-family: "Segoe UI", "Helvetica Neue", sans-serif;
-      color: #fff;
+      color: #222;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -20,55 +17,112 @@
       margin: 0;
     }
 
-    /* 左上タイトル */
     #site-title {
       position: fixed;
       top: 15px;
       left: 20px;
       font-size: 1rem;
       font-weight: bold;
-      color: #fff;
+      color: #222;
       letter-spacing: 0.5px;
-      text-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
       user-select: none;
     }
 
-    /* 🎯 Toolsボタン（文字バージョン・小型・枠あり） */
+    .container {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      padding: 40px 30px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      width: 90%;
+      max-width: 460px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 380px;
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      text-align: center;
+      background: #fff;
+      color: #222;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #0072ff;
+    }
+
+    button {
+      width: 100%;
+      max-width: 380px;
+      background: #0072ff;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: filter 0.2s ease;
+    }
+
+    button:hover {
+      filter: brightness(1.15);
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    footer a {
+      color: #0072ff;
+      text-decoration: none;
+    }
+
+    /* 🧰 Toolsボタン */
     #tools-btn {
       position: fixed;
       top: 15px;
       right: 20px;
-      background: rgba(255, 255, 255, 0.12);
+      background: #0072ff;
       color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 5px;
-      padding: 3px 8px; /* ← 横幅ぴったりに */
-      font-size: 0.7rem;
+      border: 1px solid #005cd1;
+      border-radius: 6px;
+      padding: 3px 8px !important;
       cursor: pointer;
-      line-height: 1;
-      width: auto;
-      height: auto;
-      transition: background 0.3s, box-shadow 0.3s;
-      backdrop-filter: blur(4px);
+      font-size: 0.7rem !important;
+      transition: filter 0.2s ease;
     }
 
     #tools-btn:hover {
-      background: rgba(255, 255, 255, 0.25);
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-      transform: none; /* 🔒ズーム完全禁止 */
+      filter: brightness(1.15);
     }
 
-    #tools-btn:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
-    }
-
-    /* Toolsウィンドウ */
+    /* ⚙️ Toolsウィンドウ */
     #tools-window {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.5);
       justify-content: center;
       align-items: center;
       z-index: 1000;
@@ -79,21 +133,22 @@
     #tools-window.show {
       display: flex;
       opacity: 1;
-      animation: fadeIn 0.3s forwards;
+      animation: fadeIn 0.3s ease;
     }
 
     #tools-window.hide {
-      animation: fadeOut 0.3s forwards;
+      animation: fadeOut 0.3s ease;
+      opacity: 0;
     }
 
     #tools-content {
-      background: rgba(255, 255, 255, 0.08);
+      background: #fff;
+      color: #222;
       padding: 25px;
       border-radius: 15px;
       width: 90%;
       max-width: 320px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 25px;
@@ -106,15 +161,13 @@
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.3s;
       padding: 10px;
       border-radius: 10px;
+      transition: background 0.2s ease;
     }
 
     .tool-item:hover {
-      transform: translateY(-4px);
-      background: rgba(255, 255, 255, 0.1);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      background: #f0f0f0;
     }
 
     .tool-emoji {
@@ -129,101 +182,30 @@
     #close-tools {
       grid-column: span 2;
       margin-top: 5px;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
+      background: #f5f5f5;
+      color: #333;
+      border: 1px solid #ccc;
       width: 60%;
       font-size: 0.85rem;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
+      transition: filter 0.2s ease;
     }
 
-    /* コンテナ共通 */
-    .container {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 40px 30px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-      text-align: center;
-      width: 90%;
-      max-width: 460px;
-      backdrop-filter: blur(10px);
+    #close-tools:hover {
+      filter: brightness(1.1);
     }
 
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 25px;
-      letter-spacing: 1px;
+    .hidden {
+      display: none;
     }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      max-width: 380px;
-      padding: 10px 14px;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      transition: background 0.3s, border-color 0.3s;
-    }
-
-    input[type="text"]:focus {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.5);
-    }
-
-    button {
-      width: 100%;
-      max-width: 380px;
-      background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: box-shadow 0.25s ease;
-    }
-
-    button:hover {
-      box-shadow: 0 0 12px rgba(0, 114, 255, 0.8);
-    }
-
-    footer {
-      margin-top: 20px;
-      font-size: 0.85rem;
-      color: #aaa;
-    }
-
-    footer a {
-      color: #aaa;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    .hidden { display: none; }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
+      from { opacity: 0; transform: scale(0.96); }
       to { opacity: 1; transform: scale(1); }
     }
 
     @keyframes fadeOut {
       from { opacity: 1; transform: scale(1); }
-      to { opacity: 0; transform: scale(0.95); }
+      to { opacity: 0; transform: scale(0.96); }
     }
   </style>
 </head>
@@ -231,6 +213,7 @@
   <div id="site-title">ToolsGo</div>
   <button id="tools-btn">Tools</button>
 
+  <!-- Toolsメニュー -->
   <div id="tools-window">
     <div id="tools-content">
       <div class="tool-item" id="menu-html">
@@ -242,8 +225,8 @@
         <div class="tool-name">SB3 Downloader</div>
       </div>
       <div class="tool-item" id="menu-qr">
-        <div class="tool-emoji">📱</div>
-        <div class="tool-name">QR Maker</div>
+        <div class="tool-emoji">🔳</div>
+        <div class="tool-name">QR Generator</div>
       </div>
       <button id="close-tools">Close</button>
     </div>
@@ -252,67 +235,105 @@
   <!-- HTML Downloader -->
   <div class="container" id="html-downloader">
     <h1>HTML Downloader</h1>
-    <form id="html-form">
-      <input type="text" name="url" placeholder="Enter a URL (e.g. https://example.com)" required />
+    <form method="GET" action="/download" id="html-form">
+      <input type="text" name="url" placeholder="Enter a URL" required />
       <button type="submit">Download HTML</button>
     </form>
-    <footer><a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">https://github.com/sharpner-jp/ToolsGo</a></footer>
+    <footer>© 2025 ToolsGo | <a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">Source</a></footer>
   </div>
 
   <!-- SB3 Downloader -->
   <div class="container hidden" id="sb3-downloader">
     <h1>Scratch SB3 Downloader</h1>
     <form id="sb3-form">
-      <input type="text" id="scratch-id" placeholder="Enter Scratch URL or ID" required />
+      <input type="text" id="scratch-id" placeholder="Enter Scratch Project ID or URL" required />
       <button type="submit">Download SB3</button>
     </form>
-    <footer><a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">https://github.com/sharpner-jp/ToolsGo</a></footer>
+    <footer>© 2025 ToolsGo | <a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">Source</a></footer>
   </div>
 
-  <!-- QR Code Maker -->
-  <div class="container hidden" id="qr-maker">
-    <h1>QR Code Maker</h1>
+  <!-- QR Generator -->
+  <div class="container hidden" id="qr-generator">
+    <h1>QR Code Generator</h1>
     <form id="qr-form">
-      <input type="text" id="qr-text" placeholder="Enter text or URL (e.g. example.com)" required />
+      <input type="text" id="qr-input" placeholder="Enter text or URL" required />
       <button type="submit">Generate QR</button>
     </form>
-    <div id="qr-result" style="margin-top:20px;"></div>
-    <footer><a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">https://github.com/sharpner-jp/ToolsGo</a></footer>
+    <canvas id="qr-canvas" style="margin-top:20px;"></canvas>
+    <button id="qr-download" class="hidden">Download QR</button>
+    <footer>© 2025 ToolsGo | <a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">Source</a></footer>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
-document.getElementById("html-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
+    // --- Toolsメニュー制御 ---
+    const toolsBtn = document.getElementById("tools-btn");
+    const toolsWindow = document.getElementById("tools-window");
+    const closeTools = document.getElementById("close-tools");
 
-  const urlInput = document.querySelector('input[name="url"]');
-  let url = urlInput.value.trim();
-  if (!url) return alert("URLを入力してください。");
+    const htmlSection = document.getElementById("html-downloader");
+    const sb3Section = document.getElementById("sb3-downloader");
+    const qrSection = document.getElementById("qr-generator");
 
-  // https:// がない場合補完
-  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+    const menuHtml = document.getElementById("menu-html");
+    const menuSb3 = document.getElementById("menu-sb3");
+    const menuQr = document.getElementById("menu-qr");
 
-  // 🔑 x.gd APIキー（安全性より利便性重視で埋め込み）
-  const XGD_API_KEY = "8e31dd604cd0989aaa6ad94aa319b32f"; // ← あなたのAPIキーを入れる
+    function showSection(section) {
+      [htmlSection, sb3Section, qrSection].forEach(s => s.classList.add("hidden"));
+      section.classList.remove("hidden");
+      closeToolsWindow();
+    }
 
-  try {
-    // 1️⃣ x.gd APIを叩いて短縮URL取得
-    const apiUrl = `https://xgd.io/V1/shorten?url=${encodeURIComponent(url)}&key=${XGD_API_KEY}`;
-    const res = await fetch(apiUrl);
-    const data = await res.json();
+    toolsBtn.addEventListener("click", () => {
+      toolsWindow.classList.remove("hide");
+      toolsWindow.classList.add("show");
+      toolsWindow.style.display = "flex";
+    });
 
-    if (data.status !== 200 || !data.shorturl)
-      throw new Error(data.message || "x.gd APIエラー");
+    function closeToolsWindow() {
+      toolsWindow.classList.remove("show");
+      toolsWindow.classList.add("hide");
+      setTimeout(() => {
+        toolsWindow.style.display = "none";
+        toolsWindow.classList.remove("hide");
+      }, 250);
+    }
 
-    const shortUrl = data.shorturl;
-    console.log(`🔗 短縮URL: ${shortUrl}`);
+    closeTools.addEventListener("click", closeToolsWindow);
+    toolsWindow.addEventListener("click", (e) => {
+      if (e.target === toolsWindow) closeToolsWindow();
+    });
 
-    // 2️⃣ 短縮URLをサーバーに送信
-    window.location.href = `/download?url=${encodeURIComponent(shortUrl)}`;
-  } catch (err) {
-    alert("短縮またはダウンロードに失敗しました: " + err.message);
-  }
-});
-</script>
+    menuHtml.onclick = () => showSection(htmlSection);
+    menuSb3.onclick = () => showSection(sb3Section);
+    menuQr.onclick = () => showSection(qrSection);
 
+    // --- SB3 ダウンロード処理 ---
+    document.getElementById("sb3-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const id = document.getElementById("scratch-id").value.trim();
+      if (!id) return alert("プロジェクトIDを入力してください。");
+      window.location.href = `/scratch-download/${id}`;
+    });
+
+    // --- QR生成 ---
+    document.getElementById("qr-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const input = document.getElementById("qr-input").value.trim();
+      if (!input) return alert("テキストを入力してください。");
+      const canvas = document.getElementById("qr-canvas");
+      await QRCode.toCanvas(canvas, input, { width: 200 });
+      document.getElementById("qr-download").classList.remove("hidden");
+    });
+
+    document.getElementById("qr-download").addEventListener("click", () => {
+      const canvas = document.getElementById("qr-canvas");
+      const link = document.createElement("a");
+      link.download = "qrcode.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+  </script>
 </body>
 </html>
