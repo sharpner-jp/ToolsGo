@@ -4,335 +4,442 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ToolsGo</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
   <style>
-    body {
-      background: #ffffff;
-      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
-      color: #222;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e0e0e0;
+      background: white;
     }
 
     #site-title {
-      position: fixed;
-      top: 15px;
-      left: 20px;
-      font-size: 1rem;
-      font-weight: bold;
-      color: #222;
-      letter-spacing: 0.5px;
-      user-select: none;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1a1a1a;
+    }
+
+    #tools-btn {
+      background: #1a1a1a;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    #tools-btn:hover {
+      background: #333;
+    }
+
+    /* Main Content */
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
     }
 
     .container {
-      background: #fafafa;
-      border: 1px solid #ddd;
-      border-radius: 16px;
-      padding: 40px 30px;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-      text-align: center;
-      width: 90%;
-      max-width: 460px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
     h1 {
-      font-size: 1.8rem;
-      margin-bottom: 25px;
-      color: #333;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+      color: #1a1a1a;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: #666;
+      margin-bottom: 2rem;
     }
 
     form {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 15px;
+      gap: 1.25rem;
     }
 
     input[type="text"] {
       width: 100%;
-      max-width: 380px;
-      padding: 10px 14px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
+      padding: 0.875rem;
+      border: 1px solid #d0d0d0;
+      font-size: 0.9375rem;
       outline: none;
-      text-align: center;
-      background: #fff;
-      color: #222;
-      transition: border-color 0.2s;
+      background: #fafafa;
+      color: #1a1a1a;
+      transition: all 0.2s;
+      font-family: inherit;
     }
 
     input[type="text"]:focus {
-      border-color: #0072ff;
+      background: white;
+      border-color: #1a1a1a;
     }
 
-    button {
+    input[type="text"]::placeholder {
+      color: #999;
+    }
+
+    button[type="submit"] {
       width: 100%;
-      max-width: 380px;
-      background: #0072ff;
+      background: #1a1a1a;
       color: white;
       border: none;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 0.875rem;
       cursor: pointer;
-      font-size: 1rem;
-      transition: filter 0.2s ease;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      transition: background 0.2s;
+      letter-spacing: 0.3px;
+      font-family: inherit;
     }
 
-    button:hover {
-      filter: brightness(1.15);
+    button[type="submit"]:hover {
+      background: #333;
     }
 
+    /* Footer */
     footer {
-      margin-top: 20px;
-      font-size: 0.85rem;
-      color: #555;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      font-size: 0.8125rem;
+      color: #999;
     }
 
     footer a {
-      color: #0072ff;
+      color: #666;
       text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
     }
 
-    /* 🧰 Toolsボタン */
-    #tools-btn {
-      position: fixed;
-      top: 15px;
-      right: 20px;
-      background: #0072ff;
-      color: #fff;
-      border: 1px solid #005cd1;
-      border-radius: 6px;
-      padding: 3px 8px !important;
-      cursor: pointer;
-      font-size: 0.7rem !important;
-      transition: filter 0.2s ease;
+    footer a:hover {
+      border-bottom-color: #666;
     }
 
-    #tools-btn:hover {
-      filter: brightness(1.15);
-    }
-
-    /* ⚙️ Toolsウィンドウ */
+    /* Tools Window */
     #tools-window {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.4);
       justify-content: center;
       align-items: center;
       z-index: 1000;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.2s;
     }
 
     #tools-window.show {
       display: flex;
       opacity: 1;
-      animation: fadeIn 0.3s ease;
-    }
-
-    #tools-window.hide {
-      animation: fadeOut 0.3s ease;
-      opacity: 0;
     }
 
     #tools-content {
-      background: #fff;
-      color: #222;
-      padding: 25px;
-      border-radius: 15px;
+      background: white;
+      padding: 2rem;
       width: 90%;
-      max-width: 320px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .tools-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 25px;
-      text-align: center;
-      justify-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .tool-item {
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 0.75rem;
+      padding: 1.5rem 1rem;
       cursor: pointer;
-      padding: 10px;
-      border-radius: 10px;
-      transition: background 0.2s ease;
+      border: 1px solid #e0e0e0;
+      transition: all 0.2s;
+      background: white;
     }
 
     .tool-item:hover {
-      background: #f0f0f0;
+      border-color: #1a1a1a;
+      background: #fafafa;
+    }
+
+    .tool-item.active {
+      border-color: #1a1a1a;
+      background: #1a1a1a;
+      color: white;
     }
 
     .tool-emoji {
       font-size: 2rem;
+      filter: grayscale(1);
+    }
+
+    .tool-item.active .tool-emoji {
+      filter: grayscale(0);
     }
 
     .tool-name {
-      font-size: 0.85rem;
-      margin-top: 5px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-align: center;
+      letter-spacing: 0.2px;
     }
 
     #close-tools {
-      grid-column: span 2;
-      margin-top: 5px;
-      background: #f5f5f5;
-      color: #333;
-      border: 1px solid #ccc;
-      width: 60%;
-      font-size: 0.85rem;
-      transition: filter 0.2s ease;
+      width: 100%;
+      background: #1a1a1a;
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.3px;
     }
 
     #close-tools:hover {
-      filter: brightness(1.1);
+      background: #333;
     }
 
     .hidden {
       display: none;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
+    /* QR Result */
+    #qr-result {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
     }
 
-    @keyframes fadeOut {
-      from { opacity: 1; transform: scale(1); }
-      to { opacity: 0; transform: scale(0.96); }
+    #qr-result img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #e0e0e0;
+    }
+
+    @media (max-width: 640px) {
+      header {
+        padding: 1.5rem;
+      }
+
+      .container {
+        padding: 2rem 1.5rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="site-title">ToolsGo</div>
-  <button id="tools-btn">Tools</button>
+  <header>
+    <div id="site-title">ToolsGo</div>
+    <button id="tools-btn">Tools</button>
+  </header>
 
-  <!-- Toolsメニュー -->
+  <main>
+    <!-- HTML Downloader -->
+    <div class="container" id="html-downloader">
+      <h1>HTML Downloader</h1>
+      <p class="subtitle">Download any webpage as an HTML file</p>
+      <form id="html-form">
+        <input type="text" name="url" placeholder="https://example.com" required />
+        <button type="submit">Download</button>
+      </form>
+      <footer>
+        <a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">View on GitHub</a>
+      </footer>
+    </div>
+
+    <!-- SB3 Downloader -->
+    <div class="container hidden" id="sb3-downloader">
+      <h1>SB3 Downloader</h1>
+      <p class="subtitle">Download Scratch projects as .sb3 files</p>
+      <form id="sb3-form">
+        <input type="text" id="scratch-id" placeholder="Scratch URL or Project ID" required />
+        <button type="submit">Download</button>
+      </form>
+      <footer>
+        <a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">View on GitHub</a>
+      </footer>
+    </div>
+
+    <!-- QR Code Maker -->
+    <div class="container hidden" id="qr-maker">
+      <h1>QR Code Maker</h1>
+      <p class="subtitle">Generate QR codes for text or URLs</p>
+      <form id="qr-form">
+        <input type="text" id="qr-text" placeholder="example.com or any text" required />
+        <button type="submit">Generate</button>
+      </form>
+      <div id="qr-result"></div>
+      <footer>
+        <a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">View on GitHub</a>
+      </footer>
+    </div>
+  </main>
+
+  <!-- Tools Window -->
   <div id="tools-window">
     <div id="tools-content">
-      <div class="tool-item" id="menu-html">
-        <div class="tool-emoji">🌐</div>
-        <div class="tool-name">HTML Downloader</div>
-      </div>
-      <div class="tool-item" id="menu-sb3">
-        <div class="tool-emoji">🐱</div>
-        <div class="tool-name">SB3 Downloader</div>
-      </div>
-      <div class="tool-item" id="menu-qr">
-        <div class="tool-emoji">🔳</div>
-        <div class="tool-name">QR Generator</div>
+      <div class="tools-grid">
+        <div class="tool-item active" id="menu-html">
+          <div class="tool-emoji">🌐</div>
+          <div class="tool-name">HTML Downloader</div>
+        </div>
+        <div class="tool-item" id="menu-sb3">
+          <div class="tool-emoji">🐱</div>
+          <div class="tool-name">SB3 Downloader</div>
+        </div>
+        <div class="tool-item" id="menu-qr">
+          <div class="tool-emoji">📱</div>
+          <div class="tool-name">QR Maker</div>
+        </div>
       </div>
       <button id="close-tools">Close</button>
     </div>
   </div>
 
-  <!-- HTML Downloader -->
-  <div class="container" id="html-downloader">
-    <h1>HTML Downloader</h1>
-    <form method="GET" action="/download" id="html-form">
-      <input type="text" name="url" placeholder="Enter a URL" required />
-      <button type="submit">Download HTML</button>
-    </form>
-    <footer>© 2025 ToolsGo | <a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">Source</a></footer>
-  </div>
-
-  <!-- SB3 Downloader -->
-  <div class="container hidden" id="sb3-downloader">
-    <h1>Scratch SB3 Downloader</h1>
-    <form id="sb3-form">
-      <input type="text" id="scratch-id" placeholder="Enter Scratch Project ID or URL" required />
-      <button type="submit">Download SB3</button>
-    </form>
-    <footer>© 2025 ToolsGo | <a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">Source</a></footer>
-  </div>
-
-  <!-- QR Generator -->
-  <div class="container hidden" id="qr-generator">
-    <h1>QR Code Generator</h1>
-    <form id="qr-form">
-      <input type="text" id="qr-input" placeholder="Enter text or URL" required />
-      <button type="submit">Generate QR</button>
-    </form>
-    <canvas id="qr-canvas" style="margin-top:20px;"></canvas>
-    <button id="qr-download" class="hidden">Download QR</button>
-    <footer>© 2025 ToolsGo | <a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">Source</a></footer>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
-    // --- Toolsメニュー制御 ---
     const toolsBtn = document.getElementById("tools-btn");
     const toolsWindow = document.getElementById("tools-window");
     const closeTools = document.getElementById("close-tools");
+    const containers = {
+      html: document.getElementById("html-downloader"),
+      sb3: document.getElementById("sb3-downloader"),
+      qr: document.getElementById("qr-maker")
+    };
+    const menuItems = {
+      html: document.getElementById("menu-html"),
+      sb3: document.getElementById("menu-sb3"),
+      qr: document.getElementById("menu-qr")
+    };
 
-    const htmlSection = document.getElementById("html-downloader");
-    const sb3Section = document.getElementById("sb3-downloader");
-    const qrSection = document.getElementById("qr-generator");
+    let currentTool = "html";
 
-    const menuHtml = document.getElementById("menu-html");
-    const menuSb3 = document.getElementById("menu-sb3");
-    const menuQr = document.getElementById("menu-qr");
-
-    function showSection(section) {
-      [htmlSection, sb3Section, qrSection].forEach(s => s.classList.add("hidden"));
-      section.classList.remove("hidden");
-      closeToolsWindow();
+    function switchTool(tool) {
+      Object.values(containers).forEach(c => c.classList.add("hidden"));
+      containers[tool].classList.remove("hidden");
+      Object.values(menuItems).forEach(m => m.classList.remove("active"));
+      menuItems[tool].classList.add("active");
+      currentTool = tool;
     }
 
     toolsBtn.addEventListener("click", () => {
-      toolsWindow.classList.remove("hide");
       toolsWindow.classList.add("show");
-      toolsWindow.style.display = "flex";
     });
 
-    function closeToolsWindow() {
+    closeTools.addEventListener("click", () => {
       toolsWindow.classList.remove("show");
-      toolsWindow.classList.add("hide");
-      setTimeout(() => {
-        toolsWindow.style.display = "none";
-        toolsWindow.classList.remove("hide");
-      }, 250);
-    }
-
-    closeTools.addEventListener("click", closeToolsWindow);
-    toolsWindow.addEventListener("click", (e) => {
-      if (e.target === toolsWindow) closeToolsWindow();
     });
 
-    menuHtml.onclick = () => showSection(htmlSection);
-    menuSb3.onclick = () => showSection(sb3Section);
-    menuQr.onclick = () => showSection(qrSection);
+    toolsWindow.addEventListener("click", (e) => {
+      if (e.target === toolsWindow) {
+        toolsWindow.classList.remove("show");
+      }
+    });
 
-    // --- SB3 ダウンロード処理 ---
+    menuItems.html.addEventListener("click", () => {
+      switchTool("html");
+      toolsWindow.classList.remove("show");
+    });
+
+    menuItems.sb3.addEventListener("click", () => {
+      switchTool("sb3");
+      toolsWindow.classList.remove("show");
+    });
+
+    menuItems.qr.addEventListener("click", () => {
+      switchTool("qr");
+      toolsWindow.classList.remove("show");
+    });
+
+    // HTML Form
+    document.getElementById("html-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const urlInput = document.querySelector('input[name="url"]');
+      let url = urlInput.value.trim();
+      if (!url) return alert("URLを入力してください。");
+      if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+
+      const XGD_API_KEY = "8e31dd604cd0989aaa6ad94aa319b32f";
+      try {
+        const apiUrl = `https://xgd.io/V1/shorten?url=${encodeURIComponent(url)}&key=${XGD_API_KEY}`;
+        const res = await fetch(apiUrl);
+        const data = await res.json();
+        if (data.status !== 200 || !data.shorturl) throw new Error(data.message || "x.gd APIエラー");
+        const shortUrl = data.shorturl;
+        window.location.href = `/download?url=${encodeURIComponent(shortUrl)}`;
+      } catch (err) {
+        alert("短縮またはダウンロードに失敗しました: " + err.message);
+      }
+    });
+
+    // SB3 Form
     document.getElementById("sb3-form").addEventListener("submit", (e) => {
       e.preventDefault();
-      const id = document.getElementById("scratch-id").value.trim();
-      if (!id) return alert("プロジェクトIDを入力してください。");
-      window.location.href = `/scratch-download/${id}`;
+      let input = document.getElementById("scratch-id").value.trim();
+      if (!input) return alert("プロジェクトIDまたはURLを入力してください。");
+      const match = input.match(/projects\/(\d+)/);
+      const projectId = match ? match[1] : input.replace(/\D/g, "");
+      if (!projectId) return alert("有効なプロジェクトIDまたはURLを入力してください。");
+      window.location.href = `/scratch-download/${projectId}`;
     });
 
-    // --- QR生成 ---
-    document.getElementById("qr-form").addEventListener("submit", async (e) => {
+    // QR Form
+    document.getElementById("qr-form").addEventListener("submit", (e) => {
       e.preventDefault();
-      const input = document.getElementById("qr-input").value.trim();
-      if (!input) return alert("テキストを入力してください。");
-      const canvas = document.getElementById("qr-canvas");
-      await QRCode.toCanvas(canvas, input, { width: 200 });
-      document.getElementById("qr-download").classList.remove("hidden");
-    });
-
-    document.getElementById("qr-download").addEventListener("click", () => {
-      const canvas = document.getElementById("qr-canvas");
-      const link = document.createElement("a");
-      link.download = "qrcode.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+      let text = document.getElementById("qr-text").value.trim();
+      if (!text) return alert("テキストまたはURLを入力してください。");
+      if (/^[\w.-]+\.[a-z]{2,}/i.test(text) && !/^https?:\/\//i.test(text)) {
+        text = "https://" + text;
+      }
+      window.location.href = `/qrcode?text=${encodeURIComponent(text)}`;
     });
   </script>
 </body>
