@@ -253,7 +253,7 @@
   <div class="container" id="html-downloader">
     <h1>HTML Downloader</h1>
     <form id="html-form">
-      <input type="text" id="html-url" placeholder="Enter a URL (e.g. example.com)" required />
+      <input type="text" name="url" placeholder="Enter a URL (e.g. https://example.com)" required />
       <button type="submit">Download HTML</button>
     </form>
     <footer><a href="https://github.com/sharpner-jp/ToolsGo" target="_blank">https://github.com/sharpner-jp/ToolsGo</a></footer>
@@ -281,73 +281,38 @@
   </div>
 
   <script>
-    const toolsBtn = document.getElementById("tools-btn");
-    const toolsWindow = document.getElementById("tools-window");
-    const closeTools = document.getElementById("close-tools");
+document.getElementById("html-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    const htmlSection = document.getElementById("html-downloader");
-    const sb3Section = document.getElementById("sb3-downloader");
-    const qrSection = document.getElementById("qr-maker");
+  const urlInput = document.querySelector('input[name="url"]');
+  let url = urlInput.value.trim();
+  if (!url) return alert("URLを入力してください。");
 
-    function showSection(section) {
-      [htmlSection, sb3Section, qrSection].forEach(s => s.classList.add("hidden"));
-      section.classList.remove("hidden");
-      closeToolsWindow();
-    }
+  // https:// がない場合補完
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
 
-    toolsBtn.addEventListener("click", () => {
-      toolsWindow.classList.remove("hide");
-      toolsWindow.classList.add("show");
-      toolsWindow.style.display = "flex";
-    });
+  // 🔑 x.gd APIキー（安全性より利便性重視で埋め込み）
+  const XGD_API_KEY = "8e31dd604cd0989aaa6ad94aa319b32f"; // ← あなたのAPIキーを入れる
 
-    function closeToolsWindow() {
-      toolsWindow.classList.remove("show");
-      toolsWindow.classList.add("hide");
-      setTimeout(() => {
-        toolsWindow.style.display = "none";
-        toolsWindow.classList.remove("hide");
-      }, 300);
-    }
+  try {
+    // 1️⃣ x.gd APIを叩いて短縮URL取得
+    const apiUrl = `https://xgd.io/V1/shorten?url=${encodeURIComponent(url)}&key=${XGD_API_KEY}`;
+    const res = await fetch(apiUrl);
+    const data = await res.json();
 
-    closeTools.addEventListener("click", closeToolsWindow);
-    toolsWindow.addEventListener("click", (e) => {
-      if (e.target === toolsWindow) closeToolsWindow();
-    });
+    if (data.status !== 200 || !data.shorturl)
+      throw new Error(data.message || "x.gd APIエラー");
 
-    document.getElementById("menu-html").onclick = () => showSection(htmlSection);
-    document.getElementById("menu-sb3").onclick = () => showSection(sb3Section);
-    document.getElementById("menu-qr").onclick = () => showSection(qrSection);
+    const shortUrl = data.shorturl;
+    console.log(`🔗 短縮URL: ${shortUrl}`);
 
-    document.getElementById("html-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      let url = document.getElementById("html-url").value.trim();
-      if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-      window.location.href = `/download?url=${encodeURIComponent(url)}`;
-    });
+    // 2️⃣ 短縮URLをサーバーに送信
+    window.location.href = `/download?url=${encodeURIComponent(shortUrl)}`;
+  } catch (err) {
+    alert("短縮またはダウンロードに失敗しました: " + err.message);
+  }
+});
+</script>
 
-    document.getElementById("sb3-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      let input = document.getElementById("scratch-id").value.trim();
-      const match = input.match(/projects\/(\d+)/);
-      const id = match ? match[1] : input.replace(/\D/g, "");
-      if (!id) return alert("有効なリンクまたはIDを入力してください。");
-      window.location.href = `/scratch-download/${id}`;
-    });
-
-    document.getElementById("qr-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      let text = document.getElementById("qr-text").value.trim();
-      if (/^[\w.-]+\.[a-z]{2,}/i.test(text) && !/^https?:\/\//i.test(text))
-        text = "https://" + text;
-      const qrUrl = `/qrcode?text=${encodeURIComponent(text)}`;
-      document.getElementById("qr-result").innerHTML = `
-        <img src="${qrUrl}" style="width:200px;height:200px;border-radius:10px;">
-        <br><br>
-        <a href="${qrUrl}" download="qrcode.png">
-          <button type="button">Download QR Code</button>
-        </a>`;
-    });
-  </script>
 </body>
 </html>

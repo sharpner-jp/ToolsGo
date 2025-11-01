@@ -1,72 +1,54 @@
-// ✅ ToolsGo Server.js (x.gd公式API対応)
+// ============================================================
+// 🚀 ToolsGo Server - Full Enhanced Version (URL auto-format + unified UI)
+// ============================================================
+
 const express = require("express");
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const archiver = require("archiver");
 const QRCode = require("qrcode");
-require("dotenv").config();
 
 const app = express();
 app.use(express.static("public"));
 
-// 🔑 x.gd APIキーを.envから読み取る
-const XGD_API_KEY = process.env.XGD_API_KEY;
-
 // ============================================================
-// 🌐 HTML Downloader with official x.gd API
+// 🌐 HTML Downloader (GET)
 // ============================================================
 app.get("/download", async (req, res) => {
   let { url } = req.query;
   if (!url) return res.send("URLを入力してください。");
 
+  // ✅ 自動で https:// を補完
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+
   try {
-    // 1️⃣ URLが http:// or https:// で始まらない場合は補完
-    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-
-    // 2️⃣ x.gd APIを呼び出す
-    const apiUrl = `https://xgd.io/V1/shorten?url=${encodeURIComponent(
-      url
-    )}&key=${XGD_API_KEY}`;
-
-    const shortRes = await axios.get(apiUrl);
-    const data = shortRes.data;
-
-    if (data.status !== 200 || !data.shorturl)
-      throw new Error(data.message || "x.gd APIエラー");
-
-    const shortUrl = data.shorturl;
-    console.log(`🔗 x.gd shortened: ${url} → ${shortUrl}`);
-
-    // 3️⃣ 短縮URL先のHTMLを取得
-    const htmlRes = await axios.get(shortUrl, { responseType: "arraybuffer" });
-    const htmlContent = htmlRes.data.toString("utf8");
-
-    // 4️⃣ 一時ファイルを生成して保存
-    const safeFileName =
-      url.replace(/[^a-z0-9]/gi, "_").slice(0, 50) + ".html";
+    const safeFileName = url.replace(/[^a-z0-9]/gi, "_") + ".html";
     const filePath = path.join(__dirname, safeFileName);
-    fs.writeFileSync(filePath, htmlContent, "utf8");
+    const response = await axios.get(url, { responseType: "arraybuffer" });
+    fs.writeFileSync(filePath, response.data.toString("utf8"), "utf8");
 
-    // 5️⃣ クライアントへ送信
     res.download(filePath, safeFileName, () => {
-      setTimeout(() => fs.unlink(filePath, () => {}), 1500);
+      setTimeout(() => fs.unlink(filePath, () => {}), 1000);
     });
   } catch (err) {
-    console.error("[HTML ERROR]", err.response?.data || err.message);
-    res
-      .status(500)
-      .send(
-        "HTMLの取得に失敗しました。URLまたはx.gd APIキーを確認してください。"
-      );
+    console.error("[HTML ERROR]", err.message);
+    res.send("HTMLの取得に失敗しました。URLを確認してください。");
   }
 });
 
 // ============================================================
-// 🐱 Scratch SB3 Downloader
+// 🐱 Scratch SB3 Downloader (GET)
 // ============================================================
 app.get("/scratch-download/:projectId", async (req, res) => {
-  const projectId = req.params.projectId;
+  let input = req.params.projectId;
+
+  // ✅ URLだった場合はID部分を抽出
+  const match = input.match(/projects\/(\d+)/);
+  const projectId = match ? match[1] : input.replace(/\D/g, "");
+
+  if (!projectId) return res.send("プロジェクトIDまたはURLを入力してください。");
+
   const metaUrl = `https://api.scratch.mit.edu/projects/${projectId}`;
   const tempDir = path.join(__dirname, "temp", projectId);
   const jsonPath = path.join(tempDir, "project.json");
@@ -77,15 +59,11 @@ app.get("/scratch-download/:projectId", async (req, res) => {
     const metaRes = await axios.get(metaUrl);
     const meta = metaRes.data;
     const token = meta.project_token;
-    if (!token)
-      return res.status(400).send("このプロジェクトは公開されていません。");
+    if (!token) return res.status(400).send("このプロジェクトは公開されていません。");
 
     const projectUrl = `https://projects.scratch.mit.edu/${projectId}?token=${token}`;
     const projectRes = await axios.get(projectUrl);
-    await fs.promises.writeFile(
-      jsonPath,
-      JSON.stringify(projectRes.data, null, 2)
-    );
+    await fs.promises.writeFile(jsonPath, JSON.stringify(projectRes.data, null, 2));
 
     const output = fs.createWriteStream(sb3Path);
     const archive = archiver("zip");
@@ -106,16 +84,21 @@ app.get("/scratch-download/:projectId", async (req, res) => {
 });
 
 // ============================================================
-// 🆕 QRコードメーカー
+// 📱 QRコードメーカー (GET)
 // ============================================================
 app.get("/qrcode", async (req, res) => {
-  const { text } = req.query;
-  if (!text)
-    return res.status(400).send("テキストまたはURLを入力してください。");
+  let { text } = req.query;
+  if (!text) return res.status(400).send("テキストまたはURLを入力してください。");
+
+  // ✅ https:// 自動補完（ただしリンクらしい時のみ）
+  if (/^[\w.-]+\.[a-z]{2,}/i.test(text) && !/^https?:\/\//i.test(text)) {
+    text = "https://" + text;
+  }
 
   try {
-    const filePath = path.join(__dirname, "temp", `qr_${Date.now()}.png`);
-    await fs.promises.mkdir(path.join(__dirname, "temp"), { recursive: true });
+    const tempDir = path.join(__dirname, "temp");
+    await fs.promises.mkdir(tempDir, { recursive: true });
+    const filePath = path.join(tempDir, `qr_${Date.now()}.png`);
 
     await QRCode.toFile(filePath, text, {
       width: 500,
@@ -133,9 +116,9 @@ app.get("/qrcode", async (req, res) => {
 });
 
 // ============================================================
-// 🚀 起動
+// 🚀 サーバー起動
 // ============================================================
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`✅ ToolsGo server running at: http://localhost:${PORT}`);
+  console.log(`✅ ToolsGo running at: http://localhost:${PORT}`);
 });
